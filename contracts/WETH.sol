@@ -1,23 +1,19 @@
 pragma solidity ^0.8.1;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-//solhint-disable no-empty-blocks
-contract WETH {
-  mapping(address => uint256) public balanceOf;
+contract WETH is ERC20("The little boy", "TLB") {
+    //solhint-disable no-empty-blocks
+    constructor() {}
 
-  function deposit() external payable {
-    balanceOf[msg.sender] += msg.value;
-  }
+    function deposit() external payable {
+        _mint(msg.sender, msg.value);
+    }
 
-  function withdraw(uint256 value) external {
-    uint256 balance = balanceOf[msg.sender];
-    require(balance >= value, "WETH: burn amount exceeds balance");
-    balanceOf[msg.sender] = balance - value;
+    function withdraw(uint256 value) external {
+        _burn(msg.sender, value);
+    }
 
-    (bool success, ) = msg.sender.call{ value: value }("");
-    require(success, "WETH: ETH transfer failed");
-  }
-
-  receive() external payable {
-      balanceOf[msg.sender] += msg.value;
-  }
+    receive() external payable {
+        _mint(msg.sender, msg.value);
+    }
 }
